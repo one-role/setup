@@ -1,0 +1,20 @@
+---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+#
+# Tasklist : managed.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+
+- name: get last managed changed
+  stat:
+    path: /etc/ansible/facts.d/ansible_managed.fact
+  register: factstat
+
+- name: all hosts not managed by Ansible
+  debug:
+    msg: |-
+      Host *NOT* managed by Ansible.
+        Host   : {{ inventory_hostname }}
+        Reason : {{ ansible_local.ansible_managed.reason | default('Unknown') }}
+        Date   : {{ '%Y-%m-%d %H:%M:%S' | strftime(factstat.stat.ctime) }}

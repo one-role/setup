@@ -1,0 +1,163 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : refresh
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+# Refresh the Ansible master directory and
+# Install all roles
+
+#  Determine the program name and the 'running directory'
+IAM="${0##*/}"
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+		{	printf "${PWD}/${0}"
+		} || {
+			printf "${0}"
+		})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+
+# Define where it all ends up
+ANSIBLE_DIR="/etc/ansible"
+
+# Read in the config file
+source ${ANSIBLE_DIR}/config ||
+{	echo "Could not read config file" >&2
+	exit 1
+}
+
+# Define some constants
+T="    "
+F=""
+GALAXY=0
+SETUP=0
+DOCS=0
+
+if [[ ( x"${1}" = x"-h" ) || ( x"${1}" = x"--help" ) ]]
+then
+	cat <<- @EOF
+		Syntax: refresh [-f|--force] [-n|--no-galaxy] [-s|--setup-only] [environment]
+		${T}-f|--force          Force redownload of all roles
+		${T}-n|--no-galaxy      Do not download the Ansible Galaxy roles
+		${T}-s|--setup-only     Only refresh the "setup" master role
+		${T}-d|--docs-only      Only refresh the documentation
+		${T}environment         Only refresh the selected environment
+	@EOF
+	exit
+fi
+
+if [[ ( x"${1}" = x"-f" ) || ( x"${1}" = x"--force" ) ]]
+then
+	F="--force"
+	shift
+fi
+
+if [[ ( x"${1}" = x"-n" ) || ( x"${1}" = x"--no-galaxy" ) ]]
+then
+	# We should skip downloading from online Ansible Galaxy
+	GALAXY=1
+	shift
+fi
+
+if [[ ( x"${1}" = x"-s" ) || ( x"${1}" = x"--setup-only" ) ]]
+then
+	SETUP=1
+	shift
+fi
+
+if [[ ( x"${1}" = x"-d" ) || ( x"${1}" = x"--docs-only" ) ]]
+then
+	DOCS=1
+	shift
+fi
+
+# Extra params (for environments)
+case "${1:-}"
+in
+	prd)	ENVS="prd"				;;
+	acc)	ENVS="acc"				;;
+	tst)	ENVS="tst"				;;
+	dev)	ENVS="dev"				;;
+	svc)	ENVS="prd"				;;
+	rsc)	ENVS="dev"				;;
+	all)	ENVS="dev tst acc prd"	;;
+	*)		ENVS="dev tst acc prd"	;;
+esac
+
+cat <<- @EOF
+	#
+	# Refreshing setup role
+	#
+@EOF
+cd "${ANSIBLE_DIR}"
+git pull --force
+[[ ${SETUP} -eq 1 ]] && exit 0
+
+# Refresh the documentation
+cat <<- @EOF
+	#
+	# Refreshing documentation
+	#
+@EOF
+if [[ -d "${ANSIBLE_DIR}/docs" ]]
+then
+	cd "${ANSIBLE_DIR}/docs"
+	git pull --force
+	cd - > /dev/null
+else
+	git clone ${git_http}/docs.git
+fi
+[[ ${DOCS} -eq 1 ]] && exit 0
+
+if [[ ${GALAXY} -eq 0 ]]
+then
+	cat <<- @EOF
+		#
+		# Installing roles from the Galaxy
+		#
+	@EOF
+    ansible-galaxy install ${F} -p galaxy -r galaxy.yml
+    echo
+fi
+
+for envi in ${ENVS}
+do
+	cat <<- @EOF
+		#
+		# Installing roles for "${envi}"
+		#
+	@EOF
+	sed "s/version:.*/version: ${envi}/" roles.yml > /tmp/roles.yml
+	[[ ! -d roles/${envi} ]] && mkdir -p roles/${envi}
+	ansible-galaxy install ${F} -p roles/${envi} -r /tmp/roles.yml
+	echo
+done
+
+# For svc (svc is production)
+if [[ ${ENVS} == *prd* ]]
+then
+	cat <<- @EOF
+		#
+		# Installing roles for "svc"
+		#
+	@EOF
+	[[ -d roles/svc ]] && rm -rf "${ANSIBLE_DIR}/roles/svc"
+	cp -rp "${ANSIBLE_DIR}/roles/prd" "${ANSIBLE_DIR}/roles/svc"
+	echo
+fi
+
+# For rsc (rsc is development)
+if [[ ${ENVS} == *dev* ]]
+then
+	cat <<- @EOF
+		#
+		# Installing roles for "rsc"
+		#
+	@EOF
+	[[ -d roles/rsc ]] && rm -rf "${ANSIBLE_DIR}/roles/rsc"
+	cp -rp "${ANSIBLE_DIR}/roles/dev" "${ANSIBLE_DIR}/roles/rsc"
+	echo
+fi
+
+echo

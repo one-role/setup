@@ -1,0 +1,57 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab
+---
+# Define packages for all hosts
+packages:
+  - atop
+  - bash-completion
+  - bash-completion-extras
+  - bind-utils
+  - bzip2
+  - cifs-utils
+  - cronie
+  - crontabs
+  - cups
+  - curl
+  - ed
+  - emacs
+  - elinks
+  - findutils
+  - git
+  - grin
+  - jq
+  - libpaper
+  - libselinux-python
+  - logwatch
+  - lsof
+  - lynx
+  - mailx
+  - man
+  - mc
+  - mlocate
+  - multitail
+  - net-tools
+  - nfs-utils
+  - p7zip
+  - p7zip-plugins
+  - pcre-devel
+  - python-dateutil
+  - python-jinja2
+  - python-keyczar
+  - python-magic
+  - python-pip
+  - python-setuptools
+  - python-sphinx
+  - redhat-lsb
+  - rsync
+  - screen
+  - telnet
+  - tmux
+  - tcpdump
+  - tree
+  - unzip
+  - vim
+  - vim-enhanced
+  - wget
+  - yum-utils
+  - zip
+  - zsh

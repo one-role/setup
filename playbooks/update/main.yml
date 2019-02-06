@@ -1,0 +1,35 @@
+---
+# Playbook : main.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+# Check all RPM based systems for updates
+
+- hosts: all
+  become: False
+  tasks:
+    - name: check RedHat/CentOS
+      when: ansible_facts.os_family == 'RedHat'
+      shell: 'yum --quiet check-update || test $? -eq 100'
+      args:
+        warn: no
+      register: pkgs_up
+      changed_when: False
+
+    - name: show packages
+      when: (ansible_facts.os_family == 'RedHat')
+              and
+            (pkgs_up.stdout.strip() != "")
+      debug:
+        msg: "{{ pkgs_up.stdout.split('\n') }}"
+      changed_when: True
+
+    - name: check apt last update
+      stat: path=/var/cache/apt
+      register: apt_cache_stat
+      when: ansible_facts.os_family == 'Debian'
+
+    - name: update apt if needed
+      apt: update_cache=yes
+      when: (ansible_facts.os_family == 'Debian') and
+            (ansible_date_time.epoch|float - apt_cache_stat.stat.mtime > 60*60*12)

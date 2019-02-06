@@ -1,0 +1,11 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : plays
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+for e in tst acc prd
+do
+	sed "s/dev/${e}/g" dev.yml > ${e}.yml
+done

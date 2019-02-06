@@ -1,0 +1,20 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : push
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+# Push everything to upstream
+
+for d in *
+do
+	[[ ! -d ${d}      ]] && continue
+	[[ ! -d ${d}/.git ]] && continue
+
+	cd ${d}
+	echo "Pushing ${d}"
+	git push
+	cd ..
+	echo
+done

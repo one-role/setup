@@ -1,0 +1,47 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : enc_str
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+if [[ ${#} -lt 2 ]]
+then
+	echo "Syntax: name string_to_encrypt"
+	exit 1
+fi
+
+name="${1}"; shift
+str="${*}"
+
+# Find the vault file
+vault=""
+for d in . .. ../.. ../../.. ../../../.. ${HOME}
+do
+	if [[ -f ${d}/AnsibleVaultPassword ]]
+	then
+		vault=${d}/AnsibleVaultPassword
+		break
+	elif [[ -f ${d}/.AnsibleVaultPassword ]]
+		vault=${d}/.AnsibleVaultPassword
+		break
+	fi
+done
+
+if [[ x"${vault}" = x"" ]]
+then
+	if [[ -f /root/.AnsibleVaultPassword ]]
+	then
+		vault=/root/.AnsibleVaultPassword
+	else
+		echo "No vault passwordfile found" >&2
+		exit 1
+	fi
+fi
+
+printf "${str}"								| \
+	ansible-vault 							\
+		encrypt_string 						\
+		--stdin-name="${name}"				\
+		--vault-password-file=${vault}		| \
+	sed 's/^   */  /'

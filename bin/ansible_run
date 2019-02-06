@@ -1,0 +1,252 @@
+#!/bin/sh
+# vi: set sw=4 ts=4 ai:
+
+# Program  : ansible_run
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+#
+# Watch out!!!
+# ------------
+# When running Bash or ZSH it sometimes happens that a restart
+# of a service hangs or seems to hang. Using the '/bin/sh'
+# shell seems to resolve this problem
+# This is also the reason for the extra 'su - root'.
+#
+
+IAM=$(basename ${0})
+VER=$(ansible --version)
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+	{	printf "${PWD}/${0}"
+	} || {
+		printf "${0}"
+	})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+TOPDIR="/etc/ansible"
+
+# Set some defaults and define the commandline options
+check=""
+nocows=""
+step=""
+yml="none.yml"
+cmdopt=":hdkcsl:"
+
+help()
+{
+	cat << @EOF
+	Syntax:
+		${IAM} <options> environment <playbook> <extra options for Ansible>
+
+	Options:
+		-h Show this help
+		-d Be verbose. Results in "-vvvvv --forks 1"
+		-l Limit the hosts to run for
+		-c Check the playbook, implies --diff
+		-s Step the playbook
+		<environment> Run the playbook for the environment (dev, tst, acc, prd, svc, rsc, masters).
+
+		If <environment> consists of more than one item, the run is done for group <item1> in
+		environment <item2>
+		Example:
+			ansible_run dev masters
+
+		runs the Ansible playbook "masters.yml" in environment "dev"
+@EOF
+	exit 0
+}
+
+#
+# Define a nice date/time function
+#
+now()
+{	date '+%Y-%m-%d %H:%M:%S'
+}
+
+# Goto the Ansible directory
+cd ${TOPDIR}
+
+#
+# Check if a 'no_run' file exists. If so, no run :-)
+#
+if [[ -e /etc/ansible/ansible_norun ]]
+then
+	echo "No run, because of 'norun' file"
+	exit 0
+fi
+
+#
+# Save the logging. One per hour (If not in the background)
+#
+/usr/bin/tty | grep -q '^/dev/'
+TTY=${?}
+
+#
+# Make sure the logging directory exists
+#
+logdir='/var/log/ansible'
+if [[ ! -d ${logdir} ]]
+then
+	mkdir -p ${logdir}
+	chown ansible:ansible ${logdir}
+	chmod 700 ${logdir}
+fi
+
+# Check all options and parameters
+debug=0
+while getopts "${cmdopt}" opt
+do
+	case "${opt}"
+	in
+		h) help							;;
+		c) check="--check --diff"		;;
+		s) step="--step"				;;
+		n) nocows="ANSIBLE_NOCOWS=1"	;;
+		l) limit="--limit=${OPTARG}"	;;
+		d) dbg="-vvvvv --forks 1"
+		   debug=1						;;
+	esac
+done
+shift $(( OPTIND - 1 ))
+
+# Parameters left? That should be an environment
+if [[ ${#} -eq 1 ]]
+then
+	case "${1}"
+	in
+		dev|tst|acc|prd|svc|rsc)
+			yml="playbooks/${1}.yml"
+			envi="${1}"
+			;;
+		masters)
+			yml="playbooks/${1}.yml"
+			envi="prd"
+			;;
+		*)	echo "Environment should be one of dev, tst, acc, prd, srv, rsc or masters" >&2
+			exit 1
+			;;
+	esac
+	shift
+
+	if [[ ! -f "${yml}" ]]
+	then
+		# Playbook not in the current directory. Check from the script position
+		if [[ ! -f "${CRD}/../playbooks/${1}.yml" ]]
+		then
+			echo "Environment playbook '${yml}' does not exist" >&2
+			exit 1
+		else
+			yml="${CRD}/../playbooks/${1}.yml"
+		fi
+	fi
+elif [[ ${#} -ge 2 ]]
+then
+	envi="${1}"
+	yml="playbooks/${2}.yml"
+
+	# Shift twice. Could be that we have parameters left.
+	shift
+	shift
+
+	if [[ ! -f "${yml}" ]]
+	then
+		# Playbook not in the current directory. Check from the script position
+		if [[ ! -f "${CRD}/../playbooks/${1}.yml" ]]
+		then
+			echo "Environment playbook '${yml}' does not exist" >&2
+			exit 1
+		else
+			yml="${CRD}/../playbooks/${1}.yml"
+		fi
+	fi
+else
+	echo "No environment file given." >&2
+	exit 1
+fi
+
+#
+# Name the logfile
+#
+logfile="${logdir}/$(basename ${0})_${envi}_$(date '+%d').log"
+
+#
+# TTY connected?
+#
+if [[ ${TTY} -ne 0 ]]
+then
+	#
+	# If logfile exists, get last modification date
+	#
+	if [[ -f ${logfile} ]]
+	then
+		ld=$(stat --format="%y" ${logfile} | awk '{ print $1 }')
+	else
+		ld='0000-00-00'
+	fi
+
+	#
+	# Start a new one? (If modification dates are not equal)
+	#
+	REMOVED=0
+	if [[ "$(date '+%Y-%m-%d')" != "${ld}" ]]
+	then
+		rm -f ${logfile}
+		REMOVED=1
+	fi
+
+	# Running in NON interactive mode, Save the logging
+	exec >> ${logfile}
+	exec 2>&1
+
+	if [[ ${REMOVED} -eq 0 ]]
+	then
+		l="$(printf '%-76s' ' ' | tr ' ' '=')"
+		echo
+		echo "=== Logging for $(date '+%Y-%m-%d %H:%M') ${l}"
+		echo
+	fi
+
+	# Disable cows when running in the background (No moo!!)
+	export ANSIBLE_NOCOWS=1
+fi
+
+start=$(now)
+echo "Starting Ansible run -> ${start}"
+echo "This is '${VER}'"
+
+#
+# Vault??
+#
+if [[ -f /root/.AnsibleVaultPassword ]]
+then
+	vault="--vault-password-file=/root/.AnsibleVaultPassword"
+else
+	vault=""
+fi
+
+#
+# Show debug messages
+#
+if [[ ${debug} -eq 1 ]]
+then
+	echo "${IAM} - environment : |${envi}|"  >&2
+	echo "${IAM} - playbook    : |${yml}|"   >&2
+	echo "${IAM} - vault       : |${vault}|" >&2
+	echo "${IAM} - step        : |${step}|"  >&2
+	echo "${IAM} - limit       : |${limit}|" >&2
+	echo "${IAM} - check       : |${check}|" >&2
+	echo "${IAM} - extra parms : |${@:-}|"   >&2
+fi
+
+#
+# Do it all, and do it now!!
+#
+runopts="${step} ${dbg} ${check} ${limit} ${vault} ${@:-}"
+
+# And process all the requested plays
+export ANSIBLE_ROLES_PATH=/etc/ansible/roles/${envi}:/etc/ansible/galaxy
+ansible-playbook ${runopts} ${yml}
+
+# Done!
+echo "Finished Ansible run : ${now}"
+echo "Run was started at   : ${start}"

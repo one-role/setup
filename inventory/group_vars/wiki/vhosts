@@ -1,0 +1,23 @@
+---
+vhosts_sites:
+  wiki.{{ running_env }}.example.net:
+    servername: wiki.{{ running_env }}.example.net
+    serveralias: wiki.example.net
+    documentroot: /var/www/html
+    listen_ip: "*"
+    listen_port: 80
+    redirect:
+      status: permanent
+      src: /
+      dest: https://wiki.{{ running_env }}.example.net/
+    ssl_servername: wiki.{{ running_env }}.example.net
+    ssl_serveralias: wiki.example.net
+    ssl_documentroot: /var/www/html
+    ssl_listen_ip: wiki.{{ running_env }}.example.net
+    ssl_listen_port: 443
+    ssl_certfile: /etc/pki/tls/certs/wiki.{{ running_env }}.example.net.crt
+    ssl_keyfile: /etc/pki/tls/private/wiki.{{ running_env }}.example.net.key
+    ssl_proxy_pass:
+      - { path: '/', url: 'http://127.0.0.1:8080/' }
+    ssl_extra_parameters: |
+      ProxyPreserveHost On

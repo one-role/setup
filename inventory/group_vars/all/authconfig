@@ -1,0 +1,17 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab
+---
+authconfig_ldapserver: "ldaps://ldap.example.net:7636"
+authconfig_ldapbasedn: "dc=example,dc=net"
+authconfig_enablesssd: False
+authconfig_enableshadow: True
+authconfig_enablesssdauth: False
+authconfig_enableldapauth: True
+authconfig_enableldap: True
+authconfig_enablecache: True
+authconfig_certdir: "/etc/pki/ca-trust/source/anchors"
+authconfig_certname: "ucs-root-ca.crt"
+authconfig_certhash: "a031851f.0"
+authconfig_ldapdir: "/etc/openldap"
+authconfig_ldapcertdir: "/etc/openldap/cacerts"
+authconfig_ldapcertdesc: "Univention Corporate Server Root CA"
+authconfig_trustargs: "C,C,"

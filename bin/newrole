@@ -1,0 +1,122 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : newrole
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+#
+# Create a new Ansible role template
+#
+
+IAM="${0##*/}"
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+	{	printf "${PWD}/${0}"
+	} || {
+		printf "${0}"
+	})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+
+if [[ ${#} -eq 0 ]]
+then
+	echo "Syntax: ${IAM} rolename" >&2
+	exit 1
+fi
+
+# Read in the config file
+source ${CRD}/../config ||
+{	echo "Could not read config file" >&2
+	exit 1
+}
+
+rn="${1}"
+mkdir -p ${rn}/{defaults,files,handlers,meta,tasks,templates}
+touch ${rn}/{defaults,files,handlers,meta,tasks,templates}/.gitkeep
+cat <<- @EOF > ${rn}/meta/main.yml
+	---
+	galaxy_info:
+	  author: "${name}"
+	  company: "${company}"
+	  license: MIT
+	  min_ansible_version: 2.1
+	  platforms:
+	    - name: EL
+	      versions:
+	        - 7
+	  categories:
+	    - system
+	dependencies: []
+@EOF
+
+cat <<- @EOF > ${rn}/README.md
+	# Ansible ${rn} role
+	Role to make sure that ${rn} works
+
+
+	## Requirements
+	Nothing special.
+
+
+	## Example Playbook
+
+	\`\`\`
+	---
+	# Example playbook
+
+	# Set all dynamic groups
+	- import_playbook: playbooks/pre.yml
+
+	# All common things
+	- hosts: ansiblemanaged_True
+	  roles:
+	    - ${rn}
+	\`\`\`
+
+	## License
+	MIT
+
+
+	## Author Information
+	  - ${name} <${mail}>
+
+
+	## Changelog
+	  - $(date '+%Y-%m-%d') - ${name} - Initial commit
+@EOF
+
+cat <<- @EOF > ${rn}/LICENSE
+	Copyright 2018 ${name}
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+@EOF
+
+cat <<- @EOF > ${rn}/.gitignore
+	*.swp
+@EOF
+
+# And configure git
+cd ${rn}
+git init
+git add .
+git commit -am "Initial commit of ${rn} by newrole"
+git branch -m dev
+cat <<- @EOF
+#
+# Perform the following:
+#
+# 1. Initialize a repository called ${rn} on your Git repository server
+# 2. Once created perform the following:
+#
+cd ${rn}
+git remote add origin ${git_ssh}/${rn}.git
+git push -u origin dev
+git checkout -b tst; git merge dev; git push --set-upstream origin tst
+git checkout -b acc; git merge tst; git push --set-upstream origin acc
+git checkout -b prd; git merge acc; git push --set-upstream origin prd
+git checkout dev
+@EOF

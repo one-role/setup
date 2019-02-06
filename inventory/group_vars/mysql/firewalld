@@ -1,0 +1,7 @@
+---
+# Config for firewalld role for mysql group
+
+firewalld_config:
+  - service: mysql
+    state: enabled
+

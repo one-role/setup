@@ -1,0 +1,73 @@
+---
+# Playbook : pre.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+#
+# The `pre` playbook is the very first playbook which is included in
+# all other toplevel-playbooks.
+# It creates several dynamic groups where other playbooks can rely on.
+#
+#
+# Created dynamic groups
+#   * Operating system: RedHat_[67], Ubuntu_1[468], SLES_12
+#   * Virtualization role: guest,
+#     NA (not a virtual machine, i.e. a physical server)
+#   * Vendor: HP, Dell, "VMware, Inc.", oVirt
+#   * Is the host managed by Ansible:
+#     ansiblemanaged_True, ansiblemanaged_False
+#
+
+- name: Pre-playbook (sets additional groupnames for ALL)
+  hosts: all
+  user: ansible
+  become: True
+
+  tasks:
+    - name: group by OS versions
+      # RedHat_6, RedHat_7, Ubuntu_14, Ubuntu_16, SLES_12
+      group_by:
+        key: "{{ ansible_facts.distribution }}_{{ ansible_facts.distribution_major_version }}"
+      changed_when: False
+
+    - name: group by physical/virtual machine
+      # guest, NA
+      group_by:
+        key: "{{ ansible_facts.virtualization_role }}"
+      changed_when: False
+
+    - name: group by vendor
+      # "VMware, Inc.", "HP"
+      group_by:
+        key: "{{ ansible_facts.system_vendor }}"
+      changed_when: False
+
+    - name: ensure local facts directory
+      file:
+        path: /etc/ansible/facts.d/
+        state: directory
+        mode: 0755
+        owner: ansible
+        group: ansible
+      check_mode: no
+
+    # Create the local Ansible managed fact
+    - name: create local managed fact
+      copy:
+        content: '{ "managed": "{{ ansible_managed }}", "reason": "{{ reason | default("Unknown") }}" }'
+        dest: /etc/ansible/facts.d/ansible_managed.fact
+        mode: 0644
+        owner: root
+        group: root
+      check_mode: no
+
+    - name: refresh local facts
+      setup:
+        filter: ansible_local
+
+    - name: create group of ansible managed hosts
+      # "ansiblemanaged_True", "ansiblemanaged_False"
+      group_by:
+        key: "ansiblemanaged_{{ ansible_local.ansible_managed.managed }}"
+      changed_when: False
+

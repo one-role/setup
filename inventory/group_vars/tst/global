@@ -1,0 +1,5 @@
+# vim:ff=unix ts=4 sw=4 ai expandtab
+---
+running_env: tst
+repoenv: dev
+git_branch_long: testing

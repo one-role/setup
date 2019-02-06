@@ -1,0 +1,23 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : ve
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+#
+# Edit an Ansible Vault file
+#
+
+IAM="${0##*/}"
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+	{	printf "${PWD}/${0}"
+	} || {
+		printf "${0}"
+	})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+
+vp="/root/.AnsibleVaultPassword"
+
+ansible-vault --vault-password-file="${vp}" edit "${@}"

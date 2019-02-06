@@ -1,0 +1,16 @@
+---
+# Playbook : get_vars.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+# Short playbook useful for debugging.
+#
+# Run against one host with:
+# # ansible-playbook --vault-password-file=/root/.AnsibleVaultPassword get_vars.yml --limit tester.example.net
+#
+
+- hosts: all
+  tasks:
+    - name: Display all variables/facts known for a host
+      debug:
+        var: "{{ hostvars[inventory_hostname] }}"
+

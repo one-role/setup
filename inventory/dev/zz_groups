@@ -1,0 +1,3 @@
+[dev:children]
+dev_mysql
+dev_wiki

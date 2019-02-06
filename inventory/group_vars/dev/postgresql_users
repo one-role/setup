@@ -1,0 +1,45 @@
+# List of users to be created (optional)
+postgresql_users:
+  - name: postgres
+    pass: md5cab930f56afee1b57476e4d863ac6dde
+    encrypted: yes
+  - name: nagios
+    pass: "{{ nagios_pgsql_password }}"
+    encrypted: yes
+  - name: eurdep
+    pass: 'GYbRIyk4tAdj'
+    encrypted: yes
+  - name: jboss
+    pass: 'IFaO92RuMd3x'
+    encrypted: yes
+  - name: jboss_owner
+    pass: '1L8RYJF4Zd6f'
+    encrypted: yes
+  - name: jrodosrest
+    pass: 'qHhXGVnb3ThNDskng8qPZxuCtw'
+    encrypted: yes
+  - name: jrodos
+    pass: 'md5862e80f007368800fc1ef479647e373e'
+    encrypted: yes
+  - name: measurements_owner
+    pass: 'IaUuXZzLybHc'
+    encrypted: yes
+  - name: oefentool
+    pass: '6kkBwDSEFp4ZTWqtJWGZdRTASYY7JK'
+    encrypted: yes
+  - name: oefentool_owner
+    pass: 'F8M5QnMBttMFg24E4Wz64vbPEb7RcP'
+    encrypted: yes
+  - name: sectorplot
+    pass: 'Eso0JLmaRupT'
+    encrypted: yes
+  - name: sectorplot_owner
+    pass: 'iNCrJnQAPeqt'
+    encrypted: yes
+  - name: sensorthings_owner
+    pass: 'md56c4e1fa192bc3b916a28643236124725'
+    encrypted: yes
+  - name: wfs
+    pass: '{{ measurements_database_wfs_user_password }}'
+    encrypted: yes
+

@@ -1,0 +1,26 @@
+---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+
+# Playbook : dev.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+- hosts: all
+  become: True
+  tasks:
+    - name: upgrade RedHat/CentOS
+      when: ansible_facts.os_family == 'RedHat'
+      yum:
+        name: "*"
+        state: latest
+        update_cache: yes
+
+    - name: update Debian/Ubuntu
+      when: ansible_facts.os_family == 'Debian'
+      apt:
+        update_cache: yes
+
+    - name: upgrade Debian/Ubuntu
+      when: ansible_facts.os_family == 'Debian'
+      apt:
+        upgrade: full

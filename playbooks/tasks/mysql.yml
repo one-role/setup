@@ -1,0 +1,13 @@
+---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+#
+# Tasklist : mysql.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+
+- include_role:
+    name: geerlingguy.mysql
+  tags:
+    - geerlingguy.mysql
+    - mysql

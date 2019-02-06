@@ -1,0 +1,20 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab
+---
+name: SOC Ansible
+company: Smart Owl Consulting
+domain: example.net
+ansible_topdir: /etc/ansible
+
+# repourl
+repohost: ansible.prd.example.net
+repourl: http://{{ repohost }}/deploy
+
+# If a host is *not* managed with Ansible, set this to 'false'
+# and specify a valid reason
+ansible_managed: true
+reason: None
+
+# Name the DNS servers
+dns4:
+  - 192.168.0.254
+  - 192.168.0.253

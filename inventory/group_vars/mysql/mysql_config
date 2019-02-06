@@ -1,0 +1,49 @@
+---
+# configuration settings for geerlingguy.mysql for Example-Net MySQL servers
+
+mysql_root_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39323030346338353836353231373763343739623136303931333436333433636136323934363561
+          3336653136336434383461303333393634616634303234390a333738373064346662336536346631
+          34656463633934646364353730396432303334363133363665353661313264313866646635353434
+          6564656634633166380a653239396532353630303561383265363465613061363831666132363733
+          64376336373161656438316134626365343534643766653965646466303831633939386362616361
+          3536346635366537323132383662666163643432303365393136
+
+mysql_config_include_files:
+  - { src: ../../files/mysql/mysqld.cnf }
+
+# Memory settings
+mysql_key_buffer_size: "32M"
+mysql_max_allowed_packet: "256M"
+mysql_table_open_cache: "64"
+mysql_sort_buffer_size: "1M"
+mysql_read_buffer_size: "1M"
+mysql_read_rnd_buffer_size: "2M"
+mysql_myisam_sort_buffer_size: "8M"
+mysql_thread_cache_size: "8"
+mysql_query_cache_type: "0"
+mysql_query_cache_size: "16M"
+mysql_query_cache_limit: "1M"
+mysql_max_connections: "100"
+mysql_tmp_table_size: "384M"
+mysql_max_heap_table_size: "384M"
+mysql_group_concat_max_len: "1024"
+mysql_join_buffer_size: "1M"
+#log settings
+mysql_slow_query_log_enabled: True
+mysql_log-error: "/var/log/mariadb/mariadb-error.log"
+mysql_slow_query_log_file: "/var/log/mariadb/slow-query.log"
+mysql_slow_query_time: "1"
+
+
+
+# InnoDB settings
+mysql_innodb_file_per_table: "1"
+mysql_innodb_buffer_pool_size: "2G"
+# Set .._log_file_size to 25% of buffer pool size.
+mysql_innodb_log_file_size: "256M"
+mysql_innodb_log_buffer_size: "16M"
+mysql_innodb_flush_log_at_trx_commit: "1"
+mysql_innodb_lock_wait_timeout: "50"
+

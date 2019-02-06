@@ -1,0 +1,12 @@
+[mysql:children]
+dev_mysql
+tst_mysql
+acc_mysql
+prd_mysql
+
+[wiki:children]
+dev_wiki
+tst_wiki
+acc_wiki
+prd_wiki
+

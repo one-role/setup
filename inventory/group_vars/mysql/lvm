@@ -1,0 +1,13 @@
+lvm_config:
+  db:
+    vgname: data
+    lvmount: /var/lib/mysql
+    lvsize: 8G
+    pvs: /dev/sdb
+    filesystem: ext4
+  backups:
+    vgname: data
+    lvmount: /var/backups
+    lvsize: 1G
+    pvs: /dev/sdb
+    filesystem: ext4

@@ -1,0 +1,105 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+# Program  : pull
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+IAM="${0##*/}"
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+	{	printf "${PWD}/${0}"
+	} || {
+		printf "${0}"
+	})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+
+# Direct call, or through a top link
+if [[ -L ${0} ]]
+then
+	linked=1
+else
+	linked=0
+fi
+
+# Find the roles file
+if [[ ${linked} -eq 0 ]]
+then
+	ROLES="${CRD}/../roles.yml"
+else
+	if [[ -d setup ]]
+	then
+		ROLES="setup/roles.yml"
+	else
+		ROLES="unknown"
+	fi
+fi
+
+# And is it there?
+if [[ ! -f ${ROLES} ]]
+then
+	echo "No roles file found, cannot continue" >&2
+	exit
+fi
+
+# Get the full pathname of the roles.yml
+CWD="${PWD}"
+cd $(dirname ${ROLES})
+roledir="$(pwd)"
+cd ${CWD}
+
+# If roles from setup, make sure we have  the latest commits
+if [[ x"$(basename ${roledir})" == x"setup" ]]
+then
+	cd $(dirname ${ROLES})
+	git pull
+	cd ${CWD}
+fi
+
+typeset -i CNT=0
+while read line
+do
+	if $(echo "${line}" | grep -q 'src:')
+	then
+		CNT=CNT+1
+		src[CNT]="$(echo "${line}" | sed 's/^.*src:[ 	]*//')"
+		name[CNT]=""
+	fi
+
+	if $(echo "${line}" | grep -q 'name:')
+	then
+		name[CNT]="$(echo "${line}" | sed 's/^.*name:[ 	]*//')"
+	fi
+done < <(cat ${ROLES})
+
+# When we come here, all names and repos are known
+# Move to the upper directory (if called through exe)
+[[ ${linked} -eq 0 ]] && cd ${CRD}/../..
+for i in $(seq 1 ${CNT})
+do
+	# First get the name of the repo
+	if [[ x"${name[${i}]}" = x"" ]]
+	then
+		name="$(basename "${src[${i}]}" .git)"
+	else
+		name="${name[${i}]}"
+	fi
+
+	echo
+	if [[ -d ${name} ]]
+	then
+		echo "=== Pulling ${name}"
+		cd ${name}
+		if [[ ! -d .git ]]
+		then
+			echo "Directory ${name} is *not* a git repository" >&2
+			continue
+		fi
+		git pull
+		cd ..
+	else
+		echo "=== Cloning ${name}"
+		git clone "${src[${i}]}" "${name}"
+	fi
+	echo
+done

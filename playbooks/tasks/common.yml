@@ -1,0 +1,34 @@
+---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+#
+# Tasklist : common.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+
+- include_role:
+    name: koichirok.authconfig-module
+  tags:
+    - koichirok.authconfig-module
+    - authconfig
+
+- include_role:
+    name: firewalld
+  tags:
+    - firewall
+    - firewalld
+
+- include_role:
+    name: environment
+  tags:
+    - environment
+
+- include_role:
+    name: common
+  tags:
+    - common
+
+- include_role:
+    name: authconfig
+  tags:
+    - authconfig

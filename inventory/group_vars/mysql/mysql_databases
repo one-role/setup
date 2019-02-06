@@ -1,0 +1,18 @@
+---
+# Databases for mysql.geerlingguy
+
+mysql_databases:
+  - name: calamiteit
+  - name: localweb
+  - name: localweb3
+  - name: countries
+  - name: DC
+  - name: DCC
+  - name: menu
+  - name: PRIS
+  - name: roundcubemail
+  - name: sessions
+  - name: stcmetingen
+  - name: uploads
+  - name: weermatrix
+  - name: wvimetingen

@@ -1,0 +1,94 @@
+---
+# Playbook : tst.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+# System wide playbook for the 'tst' environment
+
+# Set all dynamic groups
+- import_playbook: pre.yml
+  tags: always
+
+- name: run all playbooks, roles and tasks for 'tst'
+  hosts: ansiblemanaged_True:&tst
+  user: ansible
+  become: True
+
+  tasks:
+    - name: tst | include "common" tasks
+      import_tasks: tasks/common.yml
+      tags: common
+
+    - name: tst | include "ssh" tasks
+      import_tasks: tasks/ssh.yml
+      tags: [ ssh, openssh ]
+
+    - name: tst | include "master" tasks
+      import_tasks: tasks/master.yml
+      when: "'master' in group_names"
+      tags: master
+
+    - name: tst | include "mysql" tasks
+      import_tasks: tasks/mysql.yml
+      when: "'mysql' in group_names"
+      tags: mysql
+
+    - name: tst | include "postgresql" tasks
+      import_tasks: tasks/postgresql.yml
+      when: "'pgsql' in group_names"
+      tags: [ pgsql, postgresql ]
+
+    - name: tst | include "nagios" tasks
+      import_tasks: tasks/nagios.yml
+      when: "'monitoring' in group_names"
+      tags: monitoring
+
+    - name: tst | include "builder" tasks
+      import_tasks: tasks/builder.yml
+      when: "'builder' in group_names"
+      tags: builder
+
+    - name: tst | include "elk" tasks
+      import_tasks: tasks/elk.yml
+      when: "'elk' in group_names"
+      tags: elk
+
+    - name: tst | include "proxy" tasks
+      import_tasks: tasks/proxy.yml
+      when: "'proxy' in group_names"
+      tags: [ proxy, dhcp, openldap_proxy, squid ]
+
+    - name: tst | include "rocketchat" tasks
+      import_tasks: tasks/rocketchat.yml
+      when: "'rocketchat' in group_names"
+      tags: rocketchat
+
+    - name: tst | include "gitlab" tasks
+      import_tasks: tasks/gitlab.yml
+      when: "'gitlab' in group_names"
+      tags: gitlab
+
+    - name: tst | include "wiki" tasks
+      import_tasks: tasks/wiki.yml
+      when: "'wiki' in group_names"
+      tags: wiki
+
+    - name: tst | include "jira" tasks
+      import_tasks: tasks/jira.yml
+      when: "'jira' in group_names"
+      tags: jira
+
+    - name: tst | include "backupclient" tasks
+      import_tasks: tasks/backupclient.yml
+      tags: [ common, backup, backupclient ]
+
+- name: tst | show all hosts in environment 'tst' not managed by Ansible
+  hosts: ansiblemanaged_False:&tst
+  user: ansible
+  become: True
+
+  tasks:
+    # Show all hosts not managed by Ansible
+    - name: tst | include "managed hosts" tasks
+      import_tasks: tasks/managed.yml
+

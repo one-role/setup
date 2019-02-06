@@ -1,0 +1,14 @@
+docs/*
+facts.d/*
+galaxy/*
+inventory/host_vars/*/managed
+roles/*
+hosts
+tonk.yml
+kerstent.yml
+tk
+tonk
+tk.yml
+tonk.yml
+*.swp
+config

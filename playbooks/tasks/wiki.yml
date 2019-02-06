@@ -1,0 +1,25 @@
+---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+#
+# Tasklist : wiki.yml
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+#
+
+- include_role:
+    name: apache
+  tags:
+    - apache
+    - wiki
+
+- include_role:
+    name: wiki
+  tags:
+    - wiki
+
+- include_role:
+    name: vhosts
+  tags:
+    - vhosts
+    - wiki
+

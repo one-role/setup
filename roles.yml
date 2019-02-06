@@ -1,0 +1,47 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+# Our own roles
+#
+# The `version` is "ignored", because it is replaced on the fly with
+# `dev`, `tst`, `acc` and `prd`. This is done by the `refresh` script.
+#
+
+- src: https://github.com/one-role/apache.git
+  scm: git
+  version: master
+  name: apache
+
+- src: https://github.com/one-role/authconfig.git
+  scm: git
+  version: master
+  name: authconfig
+
+- src: https://github.com/one-role/common.git
+  scm: git
+  version: master
+  name: common
+
+- src: https://github.com/one-role/environment.git
+  scm: git
+  version: master
+  name: environment
+
+- src: https://github.com/one-role/firewalld.git
+  scm: git
+  version: master
+  name: firewalld
+
+- src: https://github.com/one-role/ssh.git
+  scm: git
+  version: master
+  name: ssh
+
+- src: https://github.com/one-role/vhosts.git
+  scm: git
+  version: master
+  name: vhosts
+
+- src: https://github.com/one-role/wiki.git
+  scm: git
+  version: master
+  name: wiki
+

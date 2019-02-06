@@ -1,0 +1,18 @@
+---
+# Users for geerlingguy.mysql role
+
+mysql_users:
+  - name: "{{ nagios_mysql_user }}"
+    host: 'monitoring.%.example.net'
+    password: "{{ nagios_mysql_password }}"
+    priv: "mysql.*:SELECT"
+  - name: localweb-admin
+    host: '192.168.0.%'
+    password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          62343562323930633964353763316561363031373863613835303635383731353337363664393930
+          3963313531613334646534316662633966346132303338310a653862306662363863323565646434
+          64356463383861303763646562343238313234613030363164666365363635306266326161353133
+          3335646439303032610a663563656165373466616535623134333232303864356138656436643738
+          6232
+    priv: '*.*:SELECT,UPDATE,DELETE/stcmetingen.*:CREATE VIEW/calamiteit.*:INSERT'

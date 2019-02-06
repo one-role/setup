@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# vi: set sw=4 ts=4 ai:
+
+# Program  : anr
+# Author   : Ton Kersten
+# Date     : 03-01-2019
+
+# Do an Ansible run with the limit on a certain host
+
+# Determine the program name and the 'running directory'
+IAM="${0##*/}"
+CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
+	{	printf "${PWD}/${0}"
+	} || {
+		printf "${0}"
+	})"
+CRD="${CRD%/*}"
+CUR="${PWD}"
+
+
+if [[ ${#} -lt 2 ]]
+then
+	echo "Need two parameters"		>&2
+	echo "  - hostname	(e.g. wiki)" >&2
+	echo "  - environment (e.g. dev)"  >&2
+	echo "This gives:"				>&2
+	echo "  ansible_run -l <hostname>.<environment>.example.net <environment> <environment> \${@}" >&2
+	echo "  Like:" >&2
+	echo "     ansible_run -l wiki.dev.example.net dev dev" >&2
+
+	exit 1
+fi
+
+h="${1}"
+e="${2}"
+shift 2
+ansible_run -l "${h}.${e}.example.net" "${e}" "${e}" "${@}"

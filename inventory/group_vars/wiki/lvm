@@ -1,0 +1,7 @@
+lvm_config:
+  wiki:
+    vgname: wiki
+    lvmount: /usr/local/confluence-data
+    lvsize: 19G
+    pvs: /dev/sdb
+    filesystem: ext4

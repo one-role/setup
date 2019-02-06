@@ -1,0 +1,12 @@
+# Galaxy roles
+- src: koichirok.authconfig-module
+
+- src: elastic.elasticsearch
+
+- src: rocketchat.server
+
+- src: geerlingguy.mysql
+
+- src: geerlingguy.gitlab
+
+- src: geerlingguy.java
