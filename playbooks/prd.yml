@@ -23,64 +23,15 @@
       import_tasks: tasks/ssh.yml
       tags: [ ssh, openssh ]
 
-    - name: prd | include "master" tasks
-      import_tasks: tasks/master.yml
-      when: "'master' in group_names"
-      tags: master
-
     - name: prd | include "mysql" tasks
       import_tasks: tasks/mysql.yml
       when: "'mysql' in group_names"
       tags: mysql
 
-    - name: prd | include "postgresql" tasks
-      import_tasks: tasks/postgresql.yml
-      when: "'pgsql' in group_names"
-      tags: [ pgsql, postgresql ]
-
-    - name: prd | include "nagios" tasks
-      import_tasks: tasks/nagios.yml
-      when: "'monitoring' in group_names"
-      tags: monitoring
-
-    - name: prd | include "builder" tasks
-      import_tasks: tasks/builder.yml
-      when: "'builder' in group_names"
-      tags: builder
-
-    - name: prd | include "elk" tasks
-      import_tasks: tasks/elk.yml
-      when: "'elk' in group_names"
-      tags: elk
-
-    - name: prd | include "proxy" tasks
-      import_tasks: tasks/proxy.yml
-      when: "'proxy' in group_names"
-      tags: [ proxy, dhcp, openldap_proxy, squid ]
-
-    - name: prd | include "rocketchat" tasks
-      import_tasks: tasks/rocketchat.yml
-      when: "'rocketchat' in group_names"
-      tags: rocketchat
-
-    - name: prd | include "gitlab" tasks
-      import_tasks: tasks/gitlab.yml
-      when: "'gitlab' in group_names"
-      tags: gitlab
-
     - name: prd | include "wiki" tasks
       import_tasks: tasks/wiki.yml
       when: "'wiki' in group_names"
       tags: wiki
-
-    - name: prd | include "jira" tasks
-      import_tasks: tasks/jira.yml
-      when: "'jira' in group_names"
-      tags: jira
-
-    - name: prd | include "backupclient" tasks
-      import_tasks: tasks/backupclient.yml
-      tags: [ common, backup, backupclient ]
 
 - name: prd | show all hosts in environment 'prd' not managed by Ansible
   hosts: ansiblemanaged_False:&prd

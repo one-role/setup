@@ -1,0 +1,4 @@
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+
+- include_role:
+    name: ssh
