@@ -8,6 +8,19 @@
 # Refresh the Ansible master directory and
 # Install all roles
 
+# Locking mechanism
+var1="$(ps -ef | grep '[a]nsible_run.sh')"
+if [[ $var1 == *"ansible_run.sh"* ]]; then
+          echo "ansible_run is triggered, please wait!"
+          exit 1
+fi
+sleep 1
+var2="$(ps -ef | grep ansible_run.sh | grep -v grep)"
+if [[ $var2 == *"sh"* ]]; then
+          echo "ansible_run is triggered, please wait!"
+          exit 1
+fi
+
 #  Determine the program name and the 'running directory'
 IAM="${0##*/}"
 CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
