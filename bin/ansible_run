@@ -14,18 +14,6 @@
 # This is also the reason for the extra 'su - root'.
 #
 
-# Locking mechanism
-var1="$(ps -ef | grep '[r]efresh' )"
-if [[ $var1 == *"sh"* ]]; then
-          echo "A refresh run is triggered, please wait!"
-fi
-sleep 2
-var2="$(ps -ef | grep '[r]efresh' )"
-if [[ $var2 == *"sh"* ]]; then
-          echo "A refresh run is triggered, please wait!"
-fi
-
-
 IAM=$(basename ${0})
 VER=$(ansible --version)
 CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
@@ -36,6 +24,19 @@ CRD="$( [[ "$(printf "${0}" | cut -c 1 )" = "." ]] &&
 CRD="${CRD%/*}"
 CUR="${PWD}"
 TOPDIR="/etc/ansible"
+
+# Locking mechanism
+var1="$(ps -ef | grep '[r]efresh' )"
+if [[ $var1 == *"sh"* ]]
+then
+          echo "A refresh run is triggered, please wait!"
+fi
+sleep 2
+var2="$(ps -ef | grep '[r]efresh' )"
+if [[ $var2 == *"sh"* ]]
+then
+          echo "A refresh run is triggered, please wait!"
+fi
 
 # Set some defaults and define the commandline options
 check=""
