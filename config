@@ -1,0 +1,16 @@
+#!/bin/bash
+# vi: set sw=4 ts=4 ai:
+
+#
+# All configurable parameters for all involved scripts
+#
+
+#
+# Config it here
+#
+name="Ton Kersten"
+mail="tonk@smartowl.nl"
+company="Smart Owl Consulting"
+git_ssh="ssh://git@git.example.net/one_role"
+git_http="https://git:gitter@git.example.net/one_role"
+
