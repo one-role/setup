@@ -25,7 +25,12 @@ The `setup` repository contains a couple of things:
 - All (small) scripts to make things tick
 
 
-# Documentation, add-on and Caveat
+## Configuration
+
+Please, change the `config` file in the top-directory so it reflects
+your own situation.
+
+## Documentation, add-on and Caveat
 
 This is the real **One Role that rules them all**.
 This repo contains everything to control all the others.
