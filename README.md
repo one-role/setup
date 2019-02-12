@@ -82,7 +82,7 @@ This way you can run Ansible for the group `wiki`, `mysql` or the
 subgroups `dev` or `dev_mysql`, giving very fine-grained control over
 the set of hosts involved in the run.
 
-![Inventory layout](/images/or_inventory.png)
+![Inventory layout](images/or_inventory.png)
 
 ### The variables
 
@@ -115,7 +115,7 @@ is for maintainability, every item has its file, e.g.
 Of course all defaults are in the `all` group directory, because all
 hosts in the inventory are automatically member of the `all` group.
 
-![Group variables](/images/or_group_vars.png)
+![Group variables](images/or_group_vars.png)
 
 ### The roles
 
@@ -154,7 +154,7 @@ correct information.
 Now run Ansible through `ansible_run` for the selected environment and
 watch the magic happen.
 
-![All together](/images/or_all.png)
+![All together](images/or_all.png)
 
 ## Documentation, add-on and Caveat
 
