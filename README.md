@@ -2,10 +2,11 @@
 
 I am a long time [Ansible](http://www.ansible.com) user and contributor
 (since 2012) and I have been struggling with a decent setup for
-a multi-environment case. I have been designing and re-designing a lot,
-until I came up with this design. And what a coincidence, a customer
-wanted a setup that was exactly this. So this concept is a real world
-setup, working in a production environment.
+a multi-environment case (a `dev`, `tst`, `acc` and `prd` environment).
+I have been designing and re-designing a lot, until I came up with this
+design. And what a coincidence, a customer wanted a setup that was
+exactly this. So this concept is a real world setup, working in
+a production environment.
 
 The setup is (really) easy. At least, that is what I think.
 
