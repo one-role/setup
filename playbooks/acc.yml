@@ -1,4 +1,6 @@
 ---
+# vim:ff=unix ts=2 sw=2 ai expandtab ft=yaml:
+#
 # Playbook : acc.yml
 # Author   : Ton Kersten
 # Date     : 03-01-2019
