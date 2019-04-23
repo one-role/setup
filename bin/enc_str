@@ -23,6 +23,7 @@ do
 		vault=${d}/AnsibleVaultPassword
 		break
 	elif [[ -f ${d}/.AnsibleVaultPassword ]]
+	then
 		vault=${d}/.AnsibleVaultPassword
 		break
 	fi
