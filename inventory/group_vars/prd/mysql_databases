@@ -2,12 +2,8 @@
 # Databases for mysql.geerlingguy
 
 mysql_databases:
-  - name: calamiteit
   - name: localweb
   - name: localweb3
-  - name: confluence
-    encoding: utf8
-    collation: utf8_bin
   - name: countries
   - name: DC
   - name: DCC
@@ -18,8 +14,4 @@ mysql_databases:
   - name: PRIS
   - name: roundcubemail
   - name: sessions
-  - name: stcmetingen
   - name: uploads
-  - name: weermatrix
-  - name: winrem
-  - name: wvimetingen
